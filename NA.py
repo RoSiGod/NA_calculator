@@ -149,10 +149,16 @@ else:
     if found_x:
         NA_final_top = best_x
     else:
-        state = "Calculation Diverged (High Compression?)"
-        NA_final_top = h 
-        sigma_top = P_force / Ag # Fallback
-        sigma_bot = P_force / Ag
+        # HANDLING THE DIVERGENCE
+        # If we couldn't find NA inside the section, it usually means 
+        # the WHOLE section is in compression (NA > h).
+        state = "Fully Compressed (NA > Depth)"
+        NA_final_top = h * 1.5 # Just for visualization
+        
+        # Calculate stress assuming full uncracked section properties again
+        # because if NA is outside, the section isn't actually cracked.
+        sigma_top = (P_force / Ag) + (M_total_uncracked * y_bar_uncracked / I_uncracked)
+        sigma_bot = (P_force / Ag) - (M_total_uncracked * y_bot_dist / I_uncracked)
 
 # --- RESULTS DISPLAY ---
 col1, col2 = st.columns([1, 1])
